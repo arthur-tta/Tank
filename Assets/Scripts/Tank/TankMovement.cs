@@ -4,12 +4,15 @@ public class TankMovement : MonoBehaviour
 {
     [SerializeField] private float speed;
     [SerializeField] private GameObject cannon;
+    [SerializeField] private LayerMask groundLayer;
 
     private Rigidbody rigidbody;
 
 
     private Vector3 inputVector;
     private Vector3 lookAtPosition;
+
+    private Camera mainCamera;
 
 
     /*
@@ -68,6 +71,8 @@ public class TankMovement : MonoBehaviour
     private void OnEnable()
     {
         rigidbody.isKinematic = false;
+        mainCamera = Camera.main;
+
     }
 
     private void OnDisable()
@@ -112,21 +117,24 @@ public class TankMovement : MonoBehaviour
 
     private void Turn()
     {
-        // Adjust the rotation of the tank based on the player's input.
-        // Lấy vị trí của chuột
-        Vector3 mousePos = Input.mousePosition;
+        //Debug.Log(mainCamera.name);
+        
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        
+        Vector3 target;
+        if(Physics.Raycast(ray, out var hit, Mathf.Infinity, groundLayer))
+        {
+            target = hit.point;
+        }
+        else
+        {
+            target = Vector3.zero;
+        }
 
-        // Chuyển vị trí của chuột từ màn hình sang thế giới trong game
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, Camera.main.transform.position.y));
+        Vector3 direction = new Vector3(target.x - cannon.transform.position.x, 0, target.z - cannon.transform.position.z);
 
-        // Xác định hướng quay của khẩu đại bác
-        Vector3 direction = mouseWorldPos - transform.position;
-        direction.y = 0; // Giữ cho khẩu đại bác chỉ quay theo trục X và Z
-
-        // Xác định hướng quay mới
-        Quaternion rotation = Quaternion.LookRotation(direction);
-
-        // Áp dụng việc quay mềm dần (sử dụng Slerp để tránh việc quay đột ngột)
-        cannon.transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 100 * Time.deltaTime);
+        //Debug.Log(direction);
+        cannon.transform.forward = direction;
+        
     }
 }

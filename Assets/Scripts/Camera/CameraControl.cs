@@ -1,7 +1,17 @@
-﻿using UnityEngine;
+﻿                 using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
+    [SerializeField] private Transform target;
+    [SerializeField] private Vector3 offset;
+
+    private void Update()
+    {
+        transform.position = target.position + offset;
+    }
+
+
+    /*
     public float m_DampTime = 0.2f;                 
     public float m_ScreenEdgeBuffer = 4f;           
     public float m_MinSize = 6.5f;                  
@@ -101,4 +111,5 @@ public class CameraControl : MonoBehaviour
 
         m_Camera.orthographicSize = FindRequiredSize();
     }
+    */
 }
